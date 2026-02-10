@@ -548,24 +548,44 @@
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
 
+            console.log('Auth attempt:', { email, isSignUp, passwordLength: password.length });
+
             if (!email || !password) {
                 showNotification('Please enter email and password');
                 return;
             }
 
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters');
+                return;
+            }
+
+            showNotification('Processing...');
+
             try {
                 if (isSignUp) {
-                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    console.log('Attempting sign up...');
+                    const { data, error } = await supabase.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            emailRedirectTo: window.location.origin
+                        }
+                    });
+                    console.log('Sign up response:', { data, error });
                     if (error) throw error;
-                    showNotification('Check your email to confirm your account!');
+                    showNotification('Success! Check your email to confirm (check spam folder too)');
                 } else {
+                    console.log('Attempting sign in...');
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    console.log('Sign in response:', { data, error });
                     if (error) throw error;
                     currentUser = data.user;
                     showApp();
                     await loadDataFromSupabase();
                 }
             } catch (error) {
+                console.error('Auth error:', error);
                 showNotification('Error: ' + error.message);
             }
         }
