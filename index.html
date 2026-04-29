@@ -5,108 +5,305 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Grocerify</title>
+    <title>Grocerify V1.1</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
     <style>
+        :root {
+            --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --surface: rgba(255, 255, 255, 0.96);
+            --surface-2: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #667eea;
+            --primary-2: #5568d3;
+            --danger: #ef4444;
+            --danger-2: #dc2626;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+            --shadow: 0 10px 25px rgba(0,0,0,0.10);
+            --shadow-soft: 0 4px 10px rgba(0,0,0,0.08);
+            --low-bg: #fff7ed;
+            --low-border: #fdba74;
+            --low-text: #9a3412;
+            --toolbar-bg: rgba(255,255,255,0.18);
+            --input-bg: #ffffff;
+        }
+
+        body.dark {
+            --bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            --surface: rgba(17, 24, 39, 0.92);
+            --surface-2: #111827;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --primary: #8b9cf7;
+            --primary-2: #7184f5;
+            --danger: #f87171;
+            --danger-2: #ef4444;
+            --border: #374151;
+            --border-strong: #4b5563;
+            --shadow: 0 10px 25px rgba(0,0,0,0.35);
+            --shadow-soft: 0 4px 10px rgba(0,0,0,0.20);
+            --low-bg: #3b1d12;
+            --low-border: #c2410c;
+            --low-text: #fdba74;
+            --toolbar-bg: rgba(17,24,39,0.45);
+            --input-bg: #0f172a;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html, body {
+            min-height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 16px;
+            padding: 14px;
             padding-bottom: 100px;
+            transition: background 0.25s ease, color 0.25s ease;
         }
 
         .container {
-            max-width: 100%;
+            max-width: 1180px;
             margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         h1 {
             color: white;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 28px;
+            text-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            letter-spacing: 0.2px;
+        }
+
+        .subhead {
+            text-align: center;
+            color: rgba(255,255,255,0.88);
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .auth-container,
+        .user-info,
+        .toolbar,
+        .table-container,
+        .stats-row,
+        .empty-state-box {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .auth-container {
-            background: white;
-            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
             padding: 24px;
-            max-width: 400px;
+            max-width: 420px;
             margin: 40px auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
         .auth-header {
-            font-size: 20px;
-            font-weight: 700;
-            color: #667eea;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 20px;
             text-align: center;
         }
 
         .user-info {
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            gap: 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .user-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .user-email {
-            color: #667eea;
-            font-weight: 600;
+            color: var(--primary);
+            font-weight: 700;
             font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .logout-btn,
+        .icon-btn,
+        .control-btn,
+        .modal-btn,
+        .add-btn,
+        .delete-btn {
+            transition: all 0.18s ease;
         }
 
         .logout-btn {
-            background: #ef4444;
+            background: var(--danger);
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .logout-btn:active {
-            background: #dc2626;
+            background: var(--danger-2);
+            transform: scale(0.98);
         }
 
-        .controls {
+        .toolbar {
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+            background: var(--toolbar-bg);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 18px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .toolbar-top {
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 10px;
+            align-items: stretch;
             flex-wrap: wrap;
         }
 
-        .control-btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 120px;
+        .search-wrap {
+            flex: 1 1 260px;
+            position: relative;
         }
 
-        .control-btn:active {
+        .search-input {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            font-size: 14px;
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1 1 320px;
+            justify-content: flex-end;
+        }
+
+        .control-btn, .icon-btn {
+            background: var(--surface-2);
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .control-btn:active,
+        .icon-btn:active {
             transform: scale(0.98);
+        }
+
+        .danger-btn {
+            background: var(--danger);
+            color: white;
+            border-color: transparent;
+        }
+
+        .toolbar-filters {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .clear-filters-btn {
+            background: transparent;
+            color: var(--muted);
+            border: 1px dashed var(--border-strong);
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
         }
 
         .file-input {
@@ -114,139 +311,194 @@
         }
 
         .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow-x: auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: var(--surface);
+            border-radius: 18px;
+            overflow: auto;
+            box-shadow: var(--shadow);
             margin-bottom: 20px;
             -webkit-overflow-scrolling: touch;
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
+            max-height: calc(100vh - 290px);
+            border: 1px solid rgba(255,255,255,0.15);
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 13px;
-            border: 1px solid #d1d5db;
+            min-width: 940px;
         }
 
-        th {
-            background: #667eea;
+        thead tr:first-child th {
+            background: var(--primary);
             color: white;
-            padding: 10px 6px;
+            padding: 12px 8px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 800;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 12;
             white-space: nowrap;
             font-size: 12px;
-            border: 1px solid #5568d3;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        thead tr.filter-row th {
+            background: var(--surface-2);
+            position: sticky;
+            top: 45px;
+            z-index: 11;
+            border-bottom: 1px solid var(--border);
+            padding: 8px;
         }
 
         td {
-            padding: 10px 6px;
-            border: 1px solid #e5e7eb;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
-        tr:hover {
-            background: #f9fafb;
+        tbody tr {
+            transition: background 0.18s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(102,126,234,0.06);
+        }
+
+        tbody tr.low-stock-row {
+            background: var(--low-bg);
+        }
+
+        tbody tr.low-stock-row td {
+            border-bottom-color: var(--low-border);
+        }
+
+        .row-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--low-text);
+            background: rgba(251,146,60,0.15);
+            border: 1px solid var(--low-border);
         }
 
         input, select {
             width: 100%;
-            padding: 8px 6px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 10px 9px;
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
             font-size: 13px;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text);
             -webkit-appearance: none;
+        }
+
+        input::placeholder {
+            color: var(--muted);
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
         }
 
         .delete-btn {
-            background: #ef4444;
+            background: var(--danger);
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 9px 12px;
+            border-radius: 10px;
             font-size: 12px;
             cursor: pointer;
             white-space: nowrap;
+            font-weight: 700;
         }
 
         .delete-btn:active {
-            background: #dc2626;
+            background: var(--danger-2);
+            transform: scale(0.98);
         }
 
         .add-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid white;
-            padding: 14px 24px;
-            border-radius: 12px;
+            background: var(--surface-2);
+            color: var(--primary);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 15px 24px;
+            border-radius: 16px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 800;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            max-width: calc(100% - 32px);
+            bottom: 14px;
+            left: 14px;
+            right: 14px;
+            max-width: calc(100% - 28px);
         }
 
         .add-btn:active {
             transform: scale(0.98);
         }
 
-        .empty-state {
+        .empty-state,
+        .empty-state-box {
             text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
+            padding: 34px 20px;
+            color: var(--muted);
         }
 
-        .category-cell { min-width: 110px; }
-        .item-cell { min-width: 100px; }
-        .inuse-cell { min-width: 80px; }
-        .qty-cell { min-width: 60px; }
-        .action-cell { min-width: 60px; }
-
-        select option {
-            padding: 10px;
+        .empty-state-box {
+            background: var(--surface);
+            border-radius: 18px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-top: 12px;
         }
+
+        .empty-title {
+            color: var(--text);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .category-cell { min-width: 140px; }
+        .item-cell { min-width: 180px; }
+        .inuse-cell { min-width: 140px; }
+        .action-cell { min-width: 80px; }
 
         .notification {
             position: fixed;
-            top: 20px;
+            top: 18px;
             left: 50%;
             transform: translateX(-50%);
-            background: white;
-            color: #667eea;
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: var(--surface-2);
+            color: var(--primary);
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
             z-index: 1000;
             display: none;
-            font-weight: 600;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            max-width: calc(100% - 24px);
+            text-align: center;
         }
 
         .notification.show {
             display: block;
-            animation: slideDown 0.3s ease;
+            animation: slideDown 0.25s ease;
         }
 
         @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
+                transform: translateX(-50%) translateY(-16px);
             }
             to {
                 opacity: 1;
@@ -257,14 +509,14 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.45);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            padding: 16px;
         }
 
         .modal.show {
@@ -272,20 +524,22 @@
         }
 
         .modal-content {
-            background: white;
-            border-radius: 12px;
+            background: var(--surface-2);
+            border-radius: 18px;
             padding: 24px;
-            width: 90%;
-            max-width: 400px;
-            max-height: 80vh;
+            width: 100%;
+            max-width: 430px;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            color: var(--text);
         }
 
         .modal-header {
-            font-size: 20px;
-            font-weight: 700;
-            color: #667eea;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 20px;
         }
 
@@ -295,24 +549,26 @@
 
         .form-label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
         }
 
         .form-input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
             font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
         }
 
         .modal-buttons {
@@ -325,19 +581,19 @@
             flex: 1;
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 800;
             cursor: pointer;
         }
 
         .modal-btn-primary {
-            background: #667eea;
+            background: var(--primary);
             color: white;
         }
 
         .modal-btn-primary:active {
-            background: #5568d3;
+            background: var(--primary-2);
         }
 
         .modal-btn-secondary {
@@ -345,12 +601,13 @@
             color: #374151;
         }
 
-        .modal-btn-secondary:active {
-            background: #d1d5db;
+        body.dark .modal-btn-secondary {
+            background: #374151;
+            color: #f3f4f6;
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .loading {
@@ -363,78 +620,233 @@
         .auth-toggle {
             text-align: center;
             margin-top: 16px;
-            color: #6b7280;
+            color: var(--muted);
             font-size: 14px;
         }
 
         .auth-toggle a {
-            color: #667eea;
+            color: var(--primary);
             cursor: pointer;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 800;
         }
 
         .auth-toggle a:hover {
             text-decoration: underline;
         }
+
+        .table-filter-input,
+        .table-filter-select {
+            padding: 9px 8px;
+            font-size: 12px;
+            border-radius: 9px;
+        }
+
+        @media (max-width: 900px) {
+            .toolbar-filters {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+                padding-bottom: 92px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subhead {
+                font-size: 13px;
+                margin-bottom: 14px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toolbar-top {
+                flex-direction: column;
+            }
+
+            .toolbar-actions {
+                justify-content: stretch;
+            }
+
+            .toolbar-actions > * {
+                flex: 1 1 calc(50% - 8px);
+            }
+
+            .toolbar-filters {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .table-container {
+                border-radius: 16px;
+                max-height: calc(100vh - 330px);
+            }
+
+            .add-btn {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛒 Grocerify</h1>
-        
+        <div class="brand">
+            <h1>Grocerify</h1>
+        </div>
+        <div class="subhead">Premium mobile-first grocery manager with search, filters, dark mode, and smart stock alerts</div>
+
         <div id="authContainer" class="auth-container">
             <div class="auth-header" id="authHeader">Sign In</div>
-            
+
             <div class="form-group">
-                <label class="form-label">Email</label>
+                <label class="form-label" for="authEmail">Email</label>
                 <input type="email" id="authEmail" class="form-input" placeholder="your@email.com">
             </div>
 
             <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" id="authPassword" class="form-input" placeholder="••••••••">
+                <label class="form-label" for="authPassword">Password</label>
+                <input type="password" id="authPassword" class="form-input" placeholder="Minimum 6 characters">
             </div>
 
             <button class="modal-btn modal-btn-primary" onclick="handleAuth()" style="width: 100%;" id="authButton">Sign In</button>
-            
+
             <div class="auth-toggle">
                 <span id="authToggleText">Don't have an account? <a onclick="toggleAuthMode()">Sign Up</a></span>
-            </div>
-            
-            <div style="margin-top: 16px; text-align: center;">
-                <button onclick="alert('JavaScript is working!')" style="padding: 8px 16px; background: #e5e7eb; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">Test Button</button>
             </div>
         </div>
 
         <div id="appContainer" class="hidden">
             <div class="user-info">
-                <span class="user-email" id="userEmail"></span>
-                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                <div class="user-meta">
+                    <span class="user-label">Signed in as</span>
+                    <span class="user-email" id="userEmail"></span>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="icon-btn" onclick="toggleDarkMode()" id="themeToggleBtn">Dark Mode</button>
+                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                </div>
             </div>
 
-            <div class="controls">
-                <button class="control-btn" onclick="document.getElementById('csvUpload').click()">📤 Upload CSV</button>
-                <button class="control-btn" onclick="downloadCSV()">📥 Download CSV</button>
-                <button class="control-btn" style="background: #ef4444; color: white;" onclick="confirmDeleteAll()">🗑️ Delete All</button>
+            <div class="toolbar">
+                <div class="toolbar-top">
+                    <div class="search-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="globalSearch" class="search-input" placeholder="Search category, item, stock, or buy list..." oninput="applyFilters()">
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <button class="control-btn" onclick="document.getElementById('csvUpload').click()">Upload CSV</button>
+                        <button class="control-btn" onclick="downloadCSV()">Download CSV</button>
+                        <button class="control-btn danger-btn" onclick="confirmDeleteAll()">Delete All</button>
+                    </div>
+                </div>
+
+                <div class="toolbar-filters">
+                    <select id="categoryFilter" onchange="applyFilters()">
+                        <option value="">All Categories</option>
+                    </select>
+
+                    <select id="stockFilter" onchange="applyFilters()">
+                        <option value="">All Stock States</option>
+                        <option value="low">Low Stock</option>
+                        <option value="tobuy">Has To Buy</option>
+                        <option value="healthy">Healthy Stock</option>
+                    </select>
+
+                    <select id="sortFilter" onchange="applyFilters()">
+                        <option value="created_asc">Sort by Oldest</option>
+                        <option value="created_desc">Sort by Newest</option>
+                        <option value="category_asc">Category A to Z</option>
+                        <option value="item_asc">Item A to Z</option>
+                    </select>
+
+                    <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
+                </div>
             </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total Items</div>
+                    <div class="stat-value" id="statTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Visible Items</div>
+                    <div class="stat-value" id="statVisible">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Low Stock</div>
+                    <div class="stat-value" id="statLow">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Categories</div>
+                    <div class="stat-value" id="statCategories">0</div>
+                </div>
+            </div>
+
             <input type="file" id="csvUpload" class="file-input" accept=".csv" onchange="handleCSVUpload(event)">
-            
+
             <div class="table-container">
                 <table id="groceryTable">
                     <thead>
                         <tr>
                             <th class="category-cell">Category</th>
                             <th class="item-cell">Items</th>
-                            <th class="inuse-cell">In-Use</th>
+                            <th class="inuse-cell">In Use</th>
                             <th class="inuse-cell">Reserve</th>
                             <th class="inuse-cell">To Buy</th>
                             <th class="action-cell">Action</th>
                         </tr>
+                        <tr class="filter-row">
+                            <th>
+                                <select id="tableCategoryFilter" class="table-filter-select" onchange="applyFilters()">
+                                    <option value="">All</option>
+                                </select>
+                            </th>
+                            <th>
+                                <input type="text" id="tableItemFilter" class="table-filter-input" placeholder="Filter items" oninput="applyFilters()">
+                            </th>
+                            <th>
+                                <input type="text" id="tableInUseFilter" class="table-filter-input" placeholder="Filter in use" oninput="applyFilters()">
+                            </th>
+                            <th>
+                                <input type="text" id="tableReserveFilter" class="table-filter-input" placeholder="Filter reserve" oninput="applyFilters()">
+                            </th>
+                            <th>
+                                <input type="text" id="tableToBuyFilter" class="table-filter-input" placeholder="Filter to buy" oninput="applyFilters()">
+                            </th>
+                            <th>
+                                <button class="clear-filters-btn" style="padding: 9px 8px;" onclick="clearTableFilters()">Reset</button>
+                            </th>
+                        </tr>
                     </thead>
-                    <tbody id="groceryBody">
-                    </tbody>
+                    <tbody id="groceryBody"></tbody>
                 </table>
+            </div>
+
+            <div id="emptyFilteredState" class="empty-state-box hidden">
+                <div class="empty-title">No matching items found</div>
+                <div>Try clearing filters or changing your search keywords.</div>
             </div>
 
             <button class="add-btn" onclick="addRow()">+ Add Item</button>
@@ -450,7 +862,7 @@
     <div class="modal" id="addItemModal">
         <div class="modal-content">
             <div class="modal-header">Add New Item</div>
-            
+
             <div class="form-group">
                 <label class="form-label">Category</label>
                 <select id="categorySelect" class="form-input" onchange="handleCategoryChange()">
@@ -461,22 +873,22 @@
 
             <div class="form-group">
                 <label class="form-label">Item Name</label>
-                <input type="text" id="itemName" class="form-input" placeholder="e.g., Milk, Shampoo">
+                <input type="text" id="itemName" class="form-input" placeholder="e.g. Milk, Shampoo">
             </div>
 
             <div class="form-group">
-                <label class="form-label">In-Use</label>
-                <input type="text" id="inUse" class="form-input" placeholder="e.g., 2 packs, 1 bottle">
+                <label class="form-label">In Use</label>
+                <input type="text" id="inUse" class="form-input" placeholder="e.g. 2 packs, 1 bottle">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Reserve</label>
-                <input type="text" id="reserve" class="form-input" placeholder="e.g., 5 bottles, 3 kg">
+                <input type="text" id="reserve" class="form-input" placeholder="e.g. 5 bottles, 3 kg">
             </div>
 
             <div class="form-group">
                 <label class="form-label">To Buy</label>
-                <input type="text" id="toBuy" class="form-input" placeholder="e.g., 2 packs, 1 kg">
+                <input type="text" id="toBuy" class="form-input" placeholder="e.g. 2 packs, 1 kg">
             </div>
 
             <div class="modal-buttons">
@@ -487,22 +899,12 @@
     </div>
 
     <script>
-        // Initialize Supabase
         let supabase;
-        try {
-            const SUPABASE_URL = 'https://kckqlpmjdomlcypgkgtr.supabase.co';
-            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3FscG1qZG9tbGN5cGdrZ3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NDA2ODYsImV4cCI6MjA4NjMxNjY4Nn0.vJH_F4-Px1UGiW5NOBXRP0tMnrb8Z3Rgn9-YHJSCZ7k';
-            
-            if (window.supabase && window.supabase.createClient) {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('Supabase initialized successfully');
-            } else {
-                throw new Error('Supabase library not loaded');
-            }
-        } catch (error) {
-            console.error('Failed to initialize Supabase:', error);
-            alert('Error loading app. Please check your internet connection and refresh the page.');
-        }
+        let currentUser = null;
+        let isSignUp = false;
+        let groceryData = [];
+        let filteredData = [];
+        let authListenerRegistered = false;
 
         const categories = [
             'Breakfast',
@@ -518,18 +920,128 @@
             'Other'
         ];
 
-        let currentUser = null;
-        let isSignUp = false;
-        let groceryData = [];
+        try {
+            const SUPABASE_URL = 'https://kckqlpmjdomlcypgkgtr.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Imtja3FscG1qZG9tbGN5cGdrZ3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NDA2ODYsImV4cCI6MjA4NjMxNjY4Nn0.vJH_F4-Px1UGiW5NOBXRP0tMnrb8Z3Rgn9-YHJSCZ7k';
 
-        // Auth functions
-        async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                currentUser = user;
-                showApp();
-                await loadDataFromSupabase();
+            if (window.supabase && window.supabase.createClient) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase initialized successfully');
             } else {
+                throw new Error('Supabase library not loaded');
+            }
+        } catch (error) {
+            console.error('Failed to initialize Supabase:', error);
+            alert('Error loading app. Please check your internet connection and refresh the page.');
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function normalizeText(value) {
+            return String(value ?? '').trim().toLowerCase();
+        }
+
+        function parseNumericHint(value) {
+            if (value == null) return null;
+            const match = String(value).match(/-?\d+(\.\d+)?/);
+            return match ? Number(match[0]) : null;
+        }
+
+        function hasMeaningfulText(value) {
+            return String(value ?? '').trim() !== '';
+        }
+
+        function isLowStock(item) {
+            const reserveText = normalizeText(item.reserve);
+            const toBuyText = normalizeText(item.toBuy);
+            const reserveNum = parseNumericHint(item.reserve);
+
+            if (toBuyText) return true;
+            if (!reserveText) return true;
+            if (['0', 'none', 'nil', 'empty', 'out', 'no'].includes(reserveText)) return true;
+            if (reserveNum !== null && reserveNum <= 1) return true;
+
+            return false;
+        }
+
+        function csvEscape(value) {
+            const text = String(value ?? '');
+            return `"${text.replace(/"/g, '""')}"`;
+        }
+
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"' && inQuotes && nextChar === '"') {
+                    current += '"';
+                    i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            values.push(current.trim());
+            return values;
+        }
+
+        function registerAuthListener() {
+            if (!supabase || authListenerRegistered) return;
+
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session && session.user) {
+                    currentUser = session.user;
+                    showApp();
+                    loadDataFromSupabase();
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    groceryData = [];
+                    filteredData = [];
+                    showAuth();
+                    renderTable();
+                    updateStats();
+                }
+            });
+
+            authListenerRegistered = true;
+        }
+
+        async function checkAuth() {
+            if (!supabase) return;
+
+            showLoading();
+
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+
+                if (error) throw error;
+
+                if (user) {
+                    currentUser = user;
+                    showApp();
+                    await loadDataFromSupabase();
+                } else {
+                    showAuth();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
                 showAuth();
             }
         }
@@ -538,7 +1050,7 @@
             isSignUp = !isSignUp;
             document.getElementById('authHeader').textContent = isSignUp ? 'Sign Up' : 'Sign In';
             document.getElementById('authButton').textContent = isSignUp ? 'Sign Up' : 'Sign In';
-            document.getElementById('authToggleText').innerHTML = isSignUp 
+            document.getElementById('authToggleText').innerHTML = isSignUp
                 ? 'Already have an account? <a onclick="toggleAuthMode()">Sign In</a>'
                 : 'Don\'t have an account? <a onclick="toggleAuthMode()">Sign Up</a>';
         }
@@ -564,21 +1076,26 @@
             try {
                 if (isSignUp) {
                     console.log('Attempting sign up...');
-                    const { data, error } = await supabase.auth.signUp({ 
-                        email, 
+                    const { data, error } = await supabase.auth.signUp({
+                        email,
                         password,
                         options: {
                             emailRedirectTo: window.location.origin
                         }
                     });
+
                     console.log('Sign up response:', { data, error });
+
                     if (error) throw error;
                     showNotification('Success! Check your email to confirm (check spam folder too)');
                 } else {
                     console.log('Attempting sign in...');
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
                     console.log('Sign in response:', { data, error });
+
                     if (error) throw error;
+
                     currentUser = data.user;
                     showApp();
                     await loadDataFromSupabase();
@@ -593,6 +1110,7 @@
             await supabase.auth.signOut();
             currentUser = null;
             groceryData = [];
+            filteredData = [];
             showAuth();
         }
 
@@ -606,7 +1124,7 @@
             document.getElementById('authContainer').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
             document.getElementById('loadingContainer').classList.add('hidden');
-            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userEmail').textContent = currentUser?.email || '';
         }
 
         function showLoading() {
@@ -615,26 +1133,31 @@
             document.getElementById('loadingContainer').classList.remove('hidden');
         }
 
-        // Supabase data functions
         async function loadDataFromSupabase() {
+            if (!currentUser) return;
+
             try {
                 const { data, error } = await supabase
                     .from('groceries')
                     .select('*')
+                    .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: true });
 
                 if (error) throw error;
 
-                groceryData = data.map(item => ({
+                groceryData = (data || []).map(item => ({
                     id: item.id,
-                    category: item.category,
-                    items: item.items,
+                    category: item.category || 'Other',
+                    items: item.items || '',
                     inUse: item.in_use || '',
                     reserve: item.reserve || '',
-                    toBuy: item.to_buy || ''
+                    toBuy: item.to_buy || '',
+                    created_at: item.created_at || '',
+                    updated_at: item.updated_at || ''
                 }));
 
-                renderTable();
+                refreshFilterOptions();
+                applyFilters();
             } catch (error) {
                 showNotification('Error loading data: ' + error.message);
             }
@@ -655,30 +1178,34 @@
                     .select();
 
                 if (error) throw error;
-                return data[0];
+                return data?.[0];
             } catch (error) {
                 showNotification('Error saving: ' + error.message);
+                return null;
             }
         }
 
         async function updateItemInSupabase(id, field, value) {
             try {
-                const updateObj = {};
                 const fieldMap = {
-                    'category': 'category',
-                    'items': 'items',
-                    'inUse': 'in_use',
-                    'reserve': 'reserve',
-                    'toBuy': 'to_buy'
+                    category: 'category',
+                    items: 'items',
+                    inUse: 'in_use',
+                    reserve: 'reserve',
+                    toBuy: 'to_buy'
                 };
-                
+
+                if (!fieldMap[field]) return;
+
+                const updateObj = {};
                 updateObj[fieldMap[field]] = value;
                 updateObj.updated_at = new Date().toISOString();
 
                 const { error } = await supabase
                     .from('groceries')
                     .update(updateObj)
-                    .eq('id', id);
+                    .eq('id', id)
+                    .eq('user_id', currentUser.id);
 
                 if (error) throw error;
             } catch (error) {
@@ -691,42 +1218,64 @@
                 const { error } = await supabase
                     .from('groceries')
                     .delete()
-                    .eq('id', id);
+                    .eq('id', id)
+                    .eq('user_id', currentUser.id);
 
                 if (error) throw error;
             } catch (error) {
                 showNotification('Error deleting: ' + error.message);
+                throw error;
             }
         }
 
-        // App functions
         function showNotification(message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.classList.add('show');
-            setTimeout(() => {
+            clearTimeout(showNotification._timer);
+            showNotification._timer = setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
 
         function getUniqueCategories() {
             const allCategories = [...new Set([...categories, ...groceryData.map(item => item.category)])];
-            return allCategories.filter(Boolean).sort();
+            return allCategories.filter(Boolean).sort((a, b) => a.localeCompare(b));
         }
 
         function populateCategoryDropdown() {
             const select = document.getElementById('categorySelect');
             const uniqueCategories = getUniqueCategories();
-            select.innerHTML = '<option value="__new__">+ New Category</option>' + 
-                uniqueCategories.map(cat => 
-                    `<option value="${cat}">${cat}</option>`
+            select.innerHTML = '<option value="__new__">+ New Category</option>' +
+                uniqueCategories.map(cat =>
+                    `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`
                 ).join('');
+        }
+
+        function refreshFilterOptions() {
+            const uniqueCategories = getUniqueCategories();
+            const categoryFilter = document.getElementById('categoryFilter');
+            const tableCategoryFilter = document.getElementById('tableCategoryFilter');
+
+            const currentTop = categoryFilter.value;
+            const currentTable = tableCategoryFilter.value;
+
+            const optionsHtml = '<option value="">All Categories</option>' +
+                uniqueCategories.map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join('');
+
+            categoryFilter.innerHTML = optionsHtml;
+
+            tableCategoryFilter.innerHTML = '<option value="">All</option>' +
+                uniqueCategories.map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join('');
+
+            categoryFilter.value = uniqueCategories.includes(currentTop) ? currentTop : '';
+            tableCategoryFilter.value = uniqueCategories.includes(currentTable) ? currentTable : '';
         }
 
         function handleCategoryChange() {
             const select = document.getElementById('categorySelect');
             const newInput = document.getElementById('newCategoryInput');
-            
+
             if (select.value === '__new__') {
                 newInput.classList.remove('hidden');
                 newInput.focus();
@@ -736,49 +1285,156 @@
             }
         }
 
+        function clearFilters() {
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('stockFilter').value = '';
+            document.getElementById('sortFilter').value = 'created_asc';
+            clearTableFilters(false);
+            applyFilters();
+        }
+
+        function clearTableFilters(runApply = true) {
+            document.getElementById('tableCategoryFilter').value = '';
+            document.getElementById('tableItemFilter').value = '';
+            document.getElementById('tableInUseFilter').value = '';
+            document.getElementById('tableReserveFilter').value = '';
+            document.getElementById('tableToBuyFilter').value = '';
+            if (runApply) applyFilters();
+        }
+
+        function applyFilters() {
+            const globalSearch = normalizeText(document.getElementById('globalSearch').value);
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const stockFilter = document.getElementById('stockFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+
+            const tableCategoryFilter = document.getElementById('tableCategoryFilter').value;
+            const tableItemFilter = normalizeText(document.getElementById('tableItemFilter').value);
+            const tableInUseFilter = normalizeText(document.getElementById('tableInUseFilter').value);
+            const tableReserveFilter = normalizeText(document.getElementById('tableReserveFilter').value);
+            const tableToBuyFilter = normalizeText(document.getElementById('tableToBuyFilter').value);
+
+            filteredData = groceryData.filter(item => {
+                const haystack = [
+                    item.category,
+                    item.items,
+                    item.inUse,
+                    item.reserve,
+                    item.toBuy
+                ].join(' ').toLowerCase();
+
+                const low = isLowStock(item);
+                const hasToBuy = hasMeaningfulText(item.toBuy);
+
+                if (globalSearch && !haystack.includes(globalSearch)) return false;
+                if (categoryFilter && item.category !== categoryFilter) return false;
+                if (tableCategoryFilter && item.category !== tableCategoryFilter) return false;
+                if (tableItemFilter && !normalizeText(item.items).includes(tableItemFilter)) return false;
+                if (tableInUseFilter && !normalizeText(item.inUse).includes(tableInUseFilter)) return false;
+                if (tableReserveFilter && !normalizeText(item.reserve).includes(tableReserveFilter)) return false;
+                if (tableToBuyFilter && !normalizeText(item.toBuy).includes(tableToBuyFilter)) return false;
+
+                if (stockFilter === 'low' && !low) return false;
+                if (stockFilter === 'tobuy' && !hasToBuy) return false;
+                if (stockFilter === 'healthy' && low) return false;
+
+                return true;
+            });
+
+            filteredData.sort((a, b) => {
+                switch (sortFilter) {
+                    case 'created_desc':
+                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                    case 'category_asc':
+                        return String(a.category).localeCompare(String(b.category));
+                    case 'item_asc':
+                        return String(a.items).localeCompare(String(b.items));
+                    case 'created_asc':
+                    default:
+                        return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+                }
+            });
+
+            renderTable();
+            updateStats();
+        }
+
+        function updateStats() {
+            const total = groceryData.length;
+            const visible = filteredData.length;
+            const low = groceryData.filter(isLowStock).length;
+            const categoryCount = new Set(groceryData.map(item => item.category).filter(Boolean)).size;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statVisible').textContent = visible;
+            document.getElementById('statLow').textContent = low;
+            document.getElementById('statCategories').textContent = categoryCount;
+        }
+
         function renderTable() {
             const tbody = document.getElementById('groceryBody');
+            const emptyFilteredState = document.getElementById('emptyFilteredState');
             const uniqueCategories = getUniqueCategories();
-            
+
             if (groceryData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No items yet. Click "+ Add Item" or upload a CSV to get started!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No items yet. Tap Add Item or upload a CSV to get started.</td></tr>';
+                emptyFilteredState.classList.add('hidden');
                 return;
             }
 
-            tbody.innerHTML = groceryData.map((item, index) => `
-                <tr>
-                    <td class="category-cell">
-                        <select onchange="updateItem(${index}, 'category', this.value)">
-                            ${uniqueCategories.map(cat => 
-                                `<option value="${cat}" ${item.category === cat ? 'selected' : ''}>${cat}</option>`
-                            ).join('')}
-                        </select>
-                    </td>
-                    <td class="item-cell">
-                        <input type="text" value="${item.items || ''}" 
-                               onchange="updateItem(${index}, 'items', this.value)"
-                               placeholder="Item name">
-                    </td>
-                    <td class="inuse-cell">
-                        <input type="text" value="${item.inUse || ''}" 
-                               onchange="updateItem(${index}, 'inUse', this.value)"
-                               placeholder="e.g., 2 packs">
-                    </td>
-                    <td class="inuse-cell">
-                        <input type="text" value="${item.reserve || ''}" 
-                               onchange="updateItem(${index}, 'reserve', this.value)"
-                               placeholder="e.g., 5 bottles">
-                    </td>
-                    <td class="inuse-cell">
-                        <input type="text" value="${item.toBuy || ''}" 
-                               onchange="updateItem(${index}, 'toBuy', this.value)"
-                               placeholder="e.g., 3 kg">
-                    </td>
-                    <td class="action-cell">
-                        <button class="delete-btn" onclick="deleteItem(${index})">Del</button>
-                    </td>
-                </tr>
-            `).join('');
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No rows match the current filters.</td></tr>';
+                emptyFilteredState.classList.remove('hidden');
+                return;
+            }
+
+            emptyFilteredState.classList.add('hidden');
+
+            tbody.innerHTML = filteredData.map(item => {
+                const realIndex = groceryData.findIndex(row => row.id === item.id);
+                const low = isLowStock(item);
+
+                return `
+                    <tr class="${low ? 'low-stock-row' : ''}">
+                        <td class="category-cell">
+                            <select onchange="updateItem(${realIndex}, 'category', this.value)">
+                                ${uniqueCategories.map(cat =>
+                                    `<option value="${escapeHtml(cat)}" ${item.category === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+                                ).join('')}
+                            </select>
+                        </td>
+                        <td class="item-cell">
+                            <input type="text"
+                                   value="${escapeHtml(item.items || '')}"
+                                   onchange="updateItem(${realIndex}, 'items', this.value)"
+                                   placeholder="Item name">
+                            ${low ? '<div class="row-badge">Low stock</div>' : ''}
+                        </td>
+                        <td class="inuse-cell">
+                            <input type="text"
+                                   value="${escapeHtml(item.inUse || '')}"
+                                   onchange="updateItem(${realIndex}, 'inUse', this.value)"
+                                   placeholder="e.g. 2 packs">
+                        </td>
+                        <td class="inuse-cell">
+                            <input type="text"
+                                   value="${escapeHtml(item.reserve || '')}"
+                                   onchange="updateItem(${realIndex}, 'reserve', this.value)"
+                                   placeholder="e.g. 5 bottles">
+                        </td>
+                        <td class="inuse-cell">
+                            <input type="text"
+                                   value="${escapeHtml(item.toBuy || '')}"
+                                   onchange="updateItem(${realIndex}, 'toBuy', this.value)"
+                                   placeholder="e.g. 3 kg">
+                        </td>
+                        <td class="action-cell">
+                            <button class="delete-btn" onclick="deleteItem(${realIndex})">Del</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function addRow() {
@@ -788,8 +1444,7 @@
         function openModal() {
             populateCategoryDropdown();
             document.getElementById('addItemModal').classList.add('show');
-            
-            // Reset form
+
             document.getElementById('categorySelect').value = '__new__';
             handleCategoryChange();
             document.getElementById('itemName').value = '';
@@ -805,28 +1460,25 @@
         async function saveNewItem() {
             const categorySelect = document.getElementById('categorySelect');
             const newCategoryInput = document.getElementById('newCategoryInput');
-            
-            let category;
-            if (categorySelect.value === '__new__') {
-                category = newCategoryInput.value.trim();
-            } else {
-                category = categorySelect.value;
-            }
-            
+
+            let category = categorySelect.value === '__new__'
+                ? newCategoryInput.value.trim()
+                : categorySelect.value;
+
             const itemName = document.getElementById('itemName').value.trim();
-            
+
             if (!category) {
-                showNotification('Please enter a category!');
+                showNotification('Please enter a category');
                 return;
             }
-            
+
             if (!itemName) {
-                showNotification('Please enter an item name!');
+                showNotification('Please enter an item name');
                 return;
             }
 
             const newItem = {
-                category: category,
+                category,
                 items: itemName,
                 inUse: document.getElementById('inUse').value.trim(),
                 reserve: document.getElementById('reserve').value.trim(),
@@ -835,34 +1487,49 @@
 
             const savedItem = await saveItemToSupabase(newItem);
             if (savedItem) {
-                groceryData.push({ ...newItem, id: savedItem.id });
-                renderTable();
+                groceryData.push({
+                    ...newItem,
+                    id: savedItem.id,
+                    created_at: savedItem.created_at || new Date().toISOString(),
+                    updated_at: savedItem.updated_at || ''
+                });
+                refreshFilterOptions();
+                applyFilters();
                 closeModal();
-                showNotification('Item added successfully!');
+                showNotification('Item added successfully');
             }
         }
 
         async function updateItem(index, field, value) {
+            if (index < 0 || !groceryData[index]) return;
             groceryData[index][field] = value;
             await updateItemInSupabase(groceryData[index].id, field, value);
+            refreshFilterOptions();
+            applyFilters();
         }
 
         async function deleteItem(index) {
+            if (index < 0 || !groceryData[index]) return;
+
             const item = groceryData[index];
-            await deleteItemFromSupabase(item.id);
-            groceryData.splice(index, 1);
-            renderTable();
-            showNotification('Item deleted');
+            try {
+                await deleteItemFromSupabase(item.id);
+                groceryData.splice(index, 1);
+                refreshFilterOptions();
+                applyFilters();
+                showNotification('Item deleted');
+            } catch (error) {
+            }
         }
 
         function confirmDeleteAll() {
             if (groceryData.length === 0) {
-                showNotification('No data to delete!');
+                showNotification('No data to delete');
                 return;
             }
 
             const confirmed = confirm(
-                `⚠️ Warning!\n\nThis will permanently delete all ${groceryData.length} items from your grocery list.\n\nAre you sure you want to continue?`
+                `This will permanently delete all ${groceryData.length} items from your grocery list. Continue?`
             );
 
             if (confirmed) {
@@ -874,7 +1541,6 @@
             try {
                 showNotification('Deleting all items...');
 
-                // Delete all items from Supabase
                 const { error } = await supabase
                     .from('groceries')
                     .delete()
@@ -882,10 +1548,12 @@
 
                 if (error) throw error;
 
-                // Clear local data
                 groceryData = [];
+                filteredData = [];
+                refreshFilterOptions();
                 renderTable();
-                showNotification('All data deleted successfully!');
+                updateStats();
+                showNotification('All data deleted successfully');
             } catch (error) {
                 showNotification('Error deleting data: ' + error.message);
             }
@@ -893,11 +1561,11 @@
 
         function downloadCSV() {
             if (groceryData.length === 0) {
-                showNotification('No data to download!');
+                showNotification('No data to download');
                 return;
             }
 
-            const headers = ['Category', 'Items', 'In-Use', 'Reserve', 'To Buy'];
+            const headers = ['Category', 'Items', 'In Use', 'Reserve', 'To Buy'];
             const rows = groceryData.map(item => [
                 item.category,
                 item.items || '',
@@ -907,19 +1575,21 @@
             ]);
 
             const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+                headers.map(csvEscape).join(','),
+                ...rows.map(row => row.map(csvEscape).join(','))
             ].join('\n');
 
-            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `grocerify_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
             a.click();
+            a.remove();
             window.URL.revokeObjectURL(url);
-            
-            showNotification('CSV downloaded!');
+
+            showNotification('CSV downloaded');
         }
 
         async function handleCSVUpload(event) {
@@ -928,104 +1598,111 @@
 
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n').filter(line => line.trim());
-                
-                if (lines.length < 2) {
-                    showNotification('CSV file is empty!');
-                    return;
-                }
+                try {
+                    const text = String(e.target.result || '');
+                    const lines = text.split(/\r?\n/).filter(line => line.trim());
 
-                // Parse header to understand column positions
-                const headerLine = lines[0].replace(/^\uFEFF/, ''); // Remove BOM if present
-                const headers = headerLine.split(',').map(h => h.trim().toLowerCase());
-                
-                console.log('CSV Headers:', headers);
+                    if (lines.length < 2) {
+                        showNotification('CSV file is empty');
+                        return;
+                    }
 
-                const newItems = [];
-                for (let i = 1; i < lines.length; i++) {
-                    // Parse CSV line properly
-                    const values = [];
-                    let current = '';
-                    let inQuotes = false;
-                    
-                    for (let char of lines[i]) {
-                        if (char === '"') {
-                            inQuotes = !inQuotes;
-                        } else if (char === ',' && !inQuotes) {
-                            values.push(current.trim());
-                            current = '';
-                        } else {
-                            current += char;
+                    const newItems = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = parseCSVLine(lines[i]);
+                        if (values.length >= 2 && values[0] && values[1]) {
+                            let category = values[0] || 'Other';
+                            const allCategories = getUniqueCategories();
+                            const matchedCategory = allCategories.find(
+                                cat => cat.toLowerCase() === category.toLowerCase()
+                            );
+                            if (matchedCategory) category = matchedCategory;
+
+                            newItems.push({
+                                category,
+                                items: values[1] || '',
+                                inUse: values[2] || '',
+                                reserve: values[3] || '',
+                                toBuy: values[4] || ''
+                            });
                         }
                     }
-                    values.push(current.trim()); // Push last value
-                    
-                    if (values.length >= 2 && values[0] && values[1]) {
-                        // Get category - if it matches an existing category, use it; otherwise use as-is
-                        let category = values[0] || 'Other';
-                        const allCategories = getUniqueCategories();
-                        
-                        const matchedCategory = allCategories.find(
-                            cat => cat.toLowerCase() === category.toLowerCase()
-                        );
-                        
-                        if (matchedCategory) {
-                            category = matchedCategory;
-                        }
-                        
-                        // Get the values for in-use, reserve, to-buy (handle different column names)
-                        const inUseValue = values[2] || '';
-                        const reserveValue = values[3] || '';
-                        const toBuyValue = values[4] || '';
-                        
-                        newItems.push({
-                            category: category,
-                            items: values[1] || '',
-                            inUse: inUseValue,
-                            reserve: reserveValue,
-                            toBuy: toBuyValue
-                        });
+
+                    if (newItems.length === 0) {
+                        showNotification('No valid data found in CSV');
+                        return;
                     }
-                }
 
-                console.log('Parsed items:', newItems.slice(0, 3)); // Log first 3 for debugging
-
-                if (newItems.length > 0) {
                     showNotification(`Importing ${newItems.length} items...`);
-                    
+
                     for (const item of newItems) {
                         const savedItem = await saveItemToSupabase(item);
                         if (savedItem) {
-                            groceryData.push({ ...item, id: savedItem.id });
+                            groceryData.push({
+                                ...item,
+                                id: savedItem.id,
+                                created_at: savedItem.created_at || new Date().toISOString(),
+                                updated_at: savedItem.updated_at || ''
+                            });
                         }
                     }
-                    renderTable();
-                    showNotification(`${newItems.length} items imported successfully!`);
-                } else {
-                    showNotification('No valid data found in CSV!');
+
+                    refreshFilterOptions();
+                    applyFilters();
+                    showNotification(`${newItems.length} items imported successfully`);
+                } catch (error) {
+                    showNotification('CSV import failed');
+                } finally {
+                    event.target.value = '';
                 }
             };
 
             reader.readAsText(file);
-            event.target.value = '';
         }
 
-        // Initialize app
-        checkAuth();
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('grocerify_theme', isDark ? 'dark' : 'light');
+            updateThemeButton();
+        }
 
-        // Listen for auth changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                currentUser = session.user;
-                showApp();
-                loadDataFromSupabase();
-            } else if (event === 'SIGNED_OUT') {
-                currentUser = null;
-                groceryData = [];
-                showAuth();
+        function updateThemeButton() {
+            const isDark = document.body.classList.contains('dark');
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) {
+                btn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            }
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('grocerify_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+            updateThemeButton();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
             }
         });
+
+        document.getElementById('addItemModal').addEventListener('click', function(event) {
+            if (event.target.id === 'addItemModal') {
+                closeModal();
+            }
+        });
+
+        applySavedTheme();
+        registerAuthListener();
+        checkAuth();
+        refreshFilterOptions();
+        renderTable();
+        updateStats();
     </script>
 </body>
 </html>
