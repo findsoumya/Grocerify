@@ -684,20 +684,6 @@
         let currentQuickFilter = 'all';
         let currentCategoryFilter = '';
 
-        const categories = [
-            'Breakfast',
-            'Bathroom Essentials',
-            'Cleaning Supplies',
-            'Snacks',
-            'Beverages',
-            'Dairy',
-            'Fruits & Vegetables',
-            'Meat & Fish',
-            'Pantry',
-            'Frozen',
-            'Other'
-        ];
-
         try {
             const SUPABASE_URL = 'https://kckqlpmjdomlcypgkgtr.supabase.co';
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtja3FscG1qZG9tbGN5cGdrZ3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NDA2ODYsImV4cCI6MjA4NjMxNjY4Nn0.vJH_F4-Px1UGiW5NOBXRP0tMnrb8Z3Rgn9-YHJSCZ7k';
@@ -991,8 +977,11 @@
         }
 
         function getUniqueCategories() {
-            const allCategories = [...new Set([...categories, ...groceryData.map(item => item.category)])];
-            return allCategories.filter(Boolean).sort((a, b) => a.localeCompare(b));
+            return [...new Set(
+                groceryData
+                    .map(item => String(item.category || '').trim())
+                    .filter(Boolean)
+            )].sort((a, b) => a.localeCompare(b));
         }
 
         function populateCategoryDropdown() {
