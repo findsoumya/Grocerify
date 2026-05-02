@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Grocerify V1.4.1</title>
+    <title>Grocerify V1.5.1</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
     <style>
         :root {
             --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --surface: rgba(255, 255, 255, 0.96);
             --surface-2: #ffffff;
             --surface-3: #f8fafc;
             --text: #1f2937;
@@ -32,7 +31,6 @@
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-                --surface: rgba(17, 24, 39, 0.92);
                 --surface-2: #111827;
                 --surface-3: #0f172a;
                 --text: #f3f4f6;
@@ -76,19 +74,44 @@
             margin: 0 auto;
         }
 
-        h1 {
-            color: white;
-            text-align: center;
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: grid;
+            grid-template-columns: 44px 1fr 44px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 10px;
-            font-size: 24px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 8px 0;
+            background: var(--bg);
         }
 
-        .subhead {
+        h1 {
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
             text-align: center;
-            color: rgba(255,255,255,0.92);
-            margin-bottom: 16px;
-            font-size: 14px;
+            margin: 0;
+        }
+
+        .hamburger-btn {
+            background: rgba(255,255,255,0.18);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+            justify-self: start;
+        }
+
+        .topbar-spacer {
+            width: 44px;
+            height: 44px;
         }
 
         .auth-container {
@@ -109,78 +132,10 @@
             text-align: center;
         }
 
-        .user-info {
-            background: var(--surface-2);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .user-email {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 14px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .logout-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .logout-btn:active {
-            background: var(--danger-2);
-        }
-
-        .controls {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .control-btn {
-            background: var(--surface-2);
-            color: var(--primary);
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: var(--shadow-soft);
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .control-btn:active {
-            transform: scale(0.98);
-        }
-
-        .danger-btn {
-            background: var(--danger);
-            color: white;
-        }
-
         .sticky-toolbar-wrap {
             position: sticky;
-            top: 10px;
-            z-index: 100;
+            top: 68px;
+            z-index: 900;
             margin-bottom: 12px;
         }
 
@@ -210,12 +165,29 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 2px;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--surface-3);
         }
 
         .chip-scroll-row::-webkit-scrollbar {
-            display: none;
+            height: 6px;
+        }
+
+        .chip-scroll-row::-webkit-scrollbar-track {
+            background: var(--surface-3);
+            border-radius: 999px;
+        }
+
+        .chip-scroll-row::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 999px;
+        }
+
+        .chip-scroll-row::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-2);
         }
 
         .chip-btn {
@@ -411,7 +383,7 @@
             padding: 12px 24px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
+            z-index: 3000;
             display: none;
             font-weight: 600;
             max-width: calc(100% - 24px);
@@ -529,6 +501,240 @@
             color: #374151;
         }
 
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            max-width: calc(100vw - 32px);
+            height: 100vh;
+            background: var(--surface-2);
+            z-index: 2500;
+            box-shadow: -8px 0 24px rgba(0,0,0,0.18);
+            transition: right 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .menu-drawer.open {
+            right: 0;
+        }
+
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 2400;
+        }
+
+        .menu-overlay.show {
+            display: block;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .menu-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .menu-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-item,
+        .menu-username {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .menu-username-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .menu-username-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            word-break: break-word;
+        }
+
+        .menu-action-btn {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .menu-action-btn.danger {
+            color: var(--danger);
+        }
+
+        .menu-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .menu-switch-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .view-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .view-switch input {
+            display: none;
+        }
+
+        .view-slider {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: var(--border-strong);
+            border-radius: 999px;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .view-slider::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+
+        .view-switch input:checked + .view-slider {
+            background: var(--primary);
+        }
+
+        .view-switch input:checked + .view-slider::after {
+            transform: translateX(20px);
+        }
+
+        .list-view-container {
+            background: var(--surface-2);
+            border-radius: 12px;
+            overflow: auto;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.08);
+            max-height: calc(100vh - 220px);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .list-view-table {
+            width: 100%;
+            min-width: 960px;
+            border-collapse: collapse;
+        }
+
+        .list-view-table th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 12px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid var(--primary-2);
+            white-space: nowrap;
+        }
+
+        .list-view-table td {
+            padding: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            vertical-align: middle;
+        }
+
+        .list-view-table tr:nth-child(even) td {
+            background: var(--surface-3);
+        }
+
+        .category-row td {
+            background: var(--surface-3) !important;
+            font-weight: 700;
+            padding: 10px 12px;
+        }
+
+        .category-row button {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
+        .category-row-meta {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .cell-input {
+            width: 100%;
+            min-width: 120px;
+        }
+
+        .cell-select {
+            min-width: 140px;
+        }
+
+        .view-page {
+            display: none;
+        }
+
+        .view-page.active {
+            display: block;
+        }
+
         @media (prefers-color-scheme: dark) {
             .modal-btn-secondary {
                 background: #374151;
@@ -571,16 +777,20 @@
                 grid-template-columns: 1fr;
             }
 
-            .control-btn {
-                min-width: calc(50% - 8px);
+            .sticky-toolbar-wrap {
+                top: 68px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Grocerify</h1>
-        
+        <div class="topbar">
+            <button id="hamburgerBtn" class="hamburger-btn hidden" onclick="openMenu()">☰</button>
+            <h1>Grocerify</h1>
+            <div class="topbar-spacer" aria-hidden="true"></div>
+        </div>
+
         <div id="authContainer" class="auth-container">
             <div class="auth-header" id="authHeader">Sign In</div>
 
@@ -602,18 +812,6 @@
         </div>
 
         <div id="appContainer" class="hidden">
-            <div class="user-info">
-                <span class="user-email" id="userEmail"></span>
-                <button class="logout-btn" onclick="handleLogout()">Logout</button>
-            </div>
-
-            <div class="controls">
-                <button class="control-btn" onclick="addRow()">+ Add Item</button>
-                <button class="control-btn" onclick="document.getElementById('csvUpload').click()">Upload CSV</button>
-                <button class="control-btn" onclick="downloadCSV()">Download CSV</button>
-                <button class="control-btn danger-btn" onclick="confirmDeleteAll()">Delete All</button>
-            </div>
-
             <div class="sticky-toolbar-wrap">
                 <div class="toolbar-card">
                     <div class="search-row">
@@ -626,13 +824,79 @@
 
             <input type="file" id="csvUpload" class="file-input" accept=".csv" onchange="handleCSVUpload(event)">
 
-            <div id="groupList" class="group-list"></div>
+            <div id="capsuleViewPage" class="view-page active">
+                <div id="groupList" class="group-list"></div>
+            </div>
+
+            <div id="listViewPage" class="view-page">
+                <div class="list-view-container">
+                    <table class="list-view-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Item</th>
+                                <th>In Use</th>
+                                <th>Reserve</th>
+                                <th>To Buy</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listViewBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div id="loadingContainer" class="loading hidden">
             Loading...
         </div>
     </div>
+
+    <div id="menuOverlay" class="menu-overlay" onclick="closeMenu()"></div>
+
+    <aside id="menuDrawer" class="menu-drawer">
+        <div class="menu-header">
+            <div class="menu-title">Menu</div>
+            <button class="menu-close-btn" onclick="closeMenu()">×</button>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-username">
+                <div class="menu-username-label">Signed in as</div>
+                <div class="menu-username-value" id="menuUserEmail"></div>
+            </div>
+
+            <div class="menu-item">
+                <div class="menu-switch-row">
+                    <span class="menu-switch-label">List View</span>
+                    <label class="view-switch">
+                        <input type="checkbox" id="listViewToggle" onchange="handleViewToggle(this.checked)">
+                        <span class="view-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <button class="menu-action-btn" onclick="closeMenu(); addRow();">Add Item</button>
+            </div>
+
+            <div class="menu-item">
+                <button class="menu-action-btn" onclick="closeMenu(); document.getElementById('csvUpload').click();">Upload CSV</button>
+            </div>
+
+            <div class="menu-item">
+                <button class="menu-action-btn" onclick="closeMenu(); downloadCSV();">Download CSV</button>
+            </div>
+
+            <div class="menu-item">
+                <button class="menu-action-btn danger" onclick="closeMenu(); confirmDeleteAll();">Delete All</button>
+            </div>
+
+            <div class="menu-item">
+                <button class="menu-action-btn danger" onclick="closeMenu(); handleLogout();">Logout</button>
+            </div>
+        </div>
+    </aside>
 
     <div class="notification" id="notification"></div>
 
@@ -675,6 +939,25 @@
         </div>
     </div>
 
+    <div class="modal" id="csvImportChoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">CSV Import Options</div>
+            <div id="csvImportChoiceText" style="color: var(--text); font-size: 14px; line-height: 1.5;"></div>
+
+            <div class="modal-buttons" style="flex-direction: column;">
+                <button class="modal-btn modal-btn-primary" onclick="handleCSVImportChoice('overwrite')">
+                    Overwrite Current Data
+                </button>
+                <button class="modal-btn modal-btn-primary" onclick="handleCSVImportChoice('add-new')">
+                    Add Only New Items
+                </button>
+                <button class="modal-btn modal-btn-secondary" onclick="handleCSVImportChoice('cancel')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let supabase;
         let currentUser = null;
@@ -683,6 +966,10 @@
         let authListenerRegistered = false;
         let currentQuickFilter = 'all';
         let currentCategoryFilter = '';
+        let currentViewMode = 'capsule';
+        let collapsedCategories = {};
+        let pendingCSVImport = null;
+        let pendingCSVFileResetTarget = null;
 
         try {
             const SUPABASE_URL = 'https://kckqlpmjdomlcypgkgtr.supabase.co';
@@ -750,6 +1037,168 @@
             return values;
         }
 
+        function makeItemKey(item) {
+            return [
+                normalizeText(item.category || 'Other'),
+                normalizeText(item.items || ''),
+                normalizeText(item.inUse || ''),
+                normalizeText(item.reserve || ''),
+                normalizeText(item.toBuy || '')
+            ].join('||');
+        }
+
+        function parseCSVItems(text) {
+            const lines = String(text || '').split(/\r?\n/).filter(line => line.trim());
+
+            if (lines.length < 2) {
+                return { items: [], error: 'CSV file is empty' };
+            }
+
+            const newItems = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+
+                if (values.length >= 2 && values[0] && values[1]) {
+                    let category = values[0] || 'Other';
+                    const allCategories = getUniqueCategories();
+                    const matchedCategory = allCategories.find(
+                        cat => cat.toLowerCase() === category.toLowerCase()
+                    );
+
+                    if (matchedCategory) {
+                        category = matchedCategory;
+                    }
+
+                    newItems.push({
+                        category,
+                        items: values[1] || '',
+                        inUse: values[2] || '',
+                        reserve: values[3] || '',
+                        toBuy: values[4] || ''
+                    });
+                }
+            }
+
+            return { items: newItems, error: '' };
+        }
+
+        async function insertItemsToSupabase(items) {
+            let importedCount = 0;
+
+            for (const item of items) {
+                const savedItem = await saveItemToSupabase(item);
+                if (savedItem) {
+                    groceryData.push({
+                        ...item,
+                        id: savedItem.id,
+                        created_at: savedItem.created_at || '',
+                        updated_at: savedItem.updated_at || ''
+                    });
+                    importedCount++;
+                }
+            }
+
+            initializeCollapsedCategories();
+            populateCategoryDropdown();
+            renderFilterChips();
+            applyView();
+
+            return importedCount;
+        }
+
+        async function replaceAllDataWithItems(items) {
+            const { error } = await supabase
+                .from('groceries')
+                .delete()
+                .eq('user_id', currentUser.id);
+
+            if (error) throw error;
+
+            groceryData = [];
+            currentQuickFilter = 'all';
+            currentCategoryFilter = '';
+            collapsedCategories = {};
+
+            const importedCount = await insertItemsToSupabase(items);
+            return importedCount;
+        }
+
+        function openCSVImportChoiceModal(csvUniqueItems, newOnlyItems, fileInput) {
+            pendingCSVImport = {
+                csvUniqueItems,
+                newOnlyItems
+            };
+            pendingCSVFileResetTarget = fileInput;
+
+            const text = `
+                <p>This CSV contains <strong>${csvUniqueItems.length}</strong> unique item(s).</p>
+                <p>There are <strong>${newOnlyItems.length}</strong> item(s) in the CSV that do not already exist in your app.</p>
+                <p>Please choose what you want to do:</p>
+                <ul style="margin-top: 8px; padding-left: 18px;">
+                    <li><strong>Overwrite Current Data</strong> will delete current app data and replace it with CSV data.</li>
+                    <li><strong>Add Only New Items</strong> will import only items not already in the app.</li>
+                </ul>
+            `;
+
+            document.getElementById('csvImportChoiceText').innerHTML = text;
+            document.getElementById('csvImportChoiceModal').classList.add('show');
+        }
+
+        function closeCSVImportChoiceModal(resetPending = true) {
+            document.getElementById('csvImportChoiceModal').classList.remove('show');
+
+            if (pendingCSVFileResetTarget) {
+                pendingCSVFileResetTarget.value = '';
+            }
+
+            pendingCSVFileResetTarget = null;
+
+            if (resetPending) {
+                pendingCSVImport = null;
+            }
+        }
+
+        async function handleCSVImportChoice(choice) {
+            if (!pendingCSVImport) return;
+
+            const { csvUniqueItems, newOnlyItems } = pendingCSVImport;
+
+            try {
+                if (choice === 'overwrite') {
+                    closeCSVImportChoiceModal(false);
+                    showNotification('Overwriting data...');
+                    const importedCount = await replaceAllDataWithItems(csvUniqueItems);
+                    pendingCSVImport = null;
+                    showNotification(`${importedCount} item(s) imported by overwrite`);
+                    return;
+                }
+
+                if (choice === 'add-new') {
+                    closeCSVImportChoiceModal(false);
+
+                    if (newOnlyItems.length === 0) {
+                        pendingCSVImport = null;
+                        showNotification('No additional items found to import');
+                        return;
+                    }
+
+                    showNotification(`Importing ${newOnlyItems.length} new item(s)...`);
+                    const importedCount = await insertItemsToSupabase(newOnlyItems);
+                    pendingCSVImport = null;
+                    showNotification(`${importedCount} new item(s) imported`);
+                    return;
+                }
+
+                closeCSVImportChoiceModal(true);
+                showNotification('CSV import cancelled');
+            } catch (error) {
+                pendingCSVImport = null;
+                console.error(error);
+                showNotification('CSV import failed');
+            }
+        }
+
         function registerAuthListener() {
             if (!supabase || authListenerRegistered) return;
 
@@ -761,8 +1210,11 @@
                 } else if (event === 'SIGNED_OUT') {
                     currentUser = null;
                     groceryData = [];
+                    collapsedCategories = {};
+                    closeMenu();
                     showAuth();
                     renderGroupedList([]);
+                    renderListView([]);
                 }
             });
 
@@ -848,6 +1300,8 @@
             await supabase.auth.signOut();
             currentUser = null;
             groceryData = [];
+            collapsedCategories = {};
+            closeMenu();
             showAuth();
         }
 
@@ -855,19 +1309,49 @@
             document.getElementById('authContainer').classList.remove('hidden');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('loadingContainer').classList.add('hidden');
+            document.getElementById('hamburgerBtn').classList.add('hidden');
         }
 
         function showApp() {
             document.getElementById('authContainer').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
             document.getElementById('loadingContainer').classList.add('hidden');
-            document.getElementById('userEmail').textContent = currentUser?.email || '';
+            document.getElementById('hamburgerBtn').classList.remove('hidden');
+            document.getElementById('menuUserEmail').textContent = currentUser?.email || '';
         }
 
         function showLoading() {
             document.getElementById('authContainer').classList.add('hidden');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('loadingContainer').classList.remove('hidden');
+        }
+
+        function openMenu() {
+            document.getElementById('menuDrawer').classList.add('open');
+            document.getElementById('menuOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            document.getElementById('menuDrawer').classList.remove('open');
+            document.getElementById('menuOverlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+
+            document.getElementById('capsuleViewPage').classList.toggle('active', mode === 'capsule');
+            document.getElementById('listViewPage').classList.toggle('active', mode === 'list');
+
+            const toggle = document.getElementById('listViewToggle');
+            if (toggle) {
+                toggle.checked = mode === 'list';
+            }
+        }
+
+        function handleViewToggle(isListView) {
+            setViewMode(isListView ? 'list' : 'capsule');
         }
 
         async function loadDataFromSupabase() {
@@ -893,12 +1377,21 @@
                     updated_at: item.updated_at || ''
                 }));
 
+                initializeCollapsedCategories();
                 populateCategoryDropdown();
                 renderFilterChips();
                 applyView();
             } catch (error) {
                 showNotification('Error loading data: ' + error.message);
             }
+        }
+
+        function initializeCollapsedCategories() {
+            getUniqueCategories().forEach(category => {
+                if (typeof collapsedCategories[category] === 'undefined') {
+                    collapsedCategories[category] = false;
+                }
+            });
         }
 
         async function saveItemToSupabase(item) {
@@ -1041,13 +1534,8 @@
         }
 
         function toggleCategory(category) {
-            const body = document.getElementById(`category-body-${slugify(category)}`);
-            const arrow = document.getElementById(`category-arrow-${slugify(category)}`);
-            if (!body || !arrow) return;
-
-            const isHidden = body.classList.contains('hidden');
-            body.classList.toggle('hidden');
-            arrow.textContent = isHidden ? 'Hide' : 'Show';
+            collapsedCategories[category] = !collapsedCategories[category];
+            applyView();
         }
 
         function slugify(value) {
@@ -1127,6 +1615,7 @@
             groupList.innerHTML = categoryNames.map(category => {
                 const categoryItems = grouped[category];
                 const slug = slugify(category);
+                const isCollapsed = !!collapsedCategories[category];
 
                 return `
                     <div class="category-section">
@@ -1135,13 +1624,99 @@
                                 <div class="category-title">${escapeHtml(category)}</div>
                                 <div class="category-meta">${categoryItems.length} item${categoryItems.length === 1 ? '' : 's'}</div>
                             </div>
-                            <div class="category-arrow" id="category-arrow-${slug}">Hide</div>
+                            <div class="category-arrow" id="category-arrow-${slug}">${isCollapsed ? 'Show' : 'Hide'}</div>
                         </button>
-                        <div class="category-body" id="category-body-${slug}">
+                        <div class="category-body ${isCollapsed ? 'hidden' : ''}" id="category-body-${slug}">
                             ${categoryItems.map(item => renderItemCard(item)).join('')}
                         </div>
                     </div>
                 `;
+            }).join('');
+        }
+
+        function renderListView(items) {
+            const tbody = document.getElementById('listViewBody');
+
+            if (groceryData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">No items yet.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">No matching items.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const grouped = groupItemsByCategory(items);
+            const categoryNames = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
+            const uniqueCategories = getUniqueCategories();
+
+            tbody.innerHTML = categoryNames.map(category => {
+                const categoryItems = grouped[category];
+                const isCollapsed = !!collapsedCategories[category];
+                const categoryRow = `
+                    <tr class="category-row">
+                        <td colspan="6">
+                            <button onclick="toggleCategory('${escapeHtml(category).replace(/'/g, "\\'")}')">
+                                ${escapeHtml(category)}
+                                <div class="category-row-meta">${categoryItems.length} item${categoryItems.length === 1 ? '' : 's'} • ${isCollapsed ? 'Show' : 'Hide'}</div>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+                const itemRows = isCollapsed ? '' : categoryItems.map(item => {
+                    const realIndex = groceryData.findIndex(row => row.id === item.id);
+
+                    return `
+                        <tr>
+                            <td>
+                                <select class="cell-select" onchange="updateItem(${realIndex}, 'category', this.value)">
+                                    ${uniqueCategories.map(cat =>
+                                        `<option value="${escapeHtml(cat)}" ${item.category === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                            <td>
+                                <input class="cell-input" type="text"
+                                       value="${escapeHtml(item.items || '')}"
+                                       onchange="updateItem(${realIndex}, 'items', this.value)"
+                                       placeholder="Item name">
+                            </td>
+                            <td>
+                                <input class="cell-input" type="text"
+                                       value="${escapeHtml(item.inUse || '')}"
+                                       onchange="updateItem(${realIndex}, 'inUse', this.value)"
+                                       placeholder="In Use">
+                            </td>
+                            <td>
+                                <input class="cell-input" type="text"
+                                       value="${escapeHtml(item.reserve || '')}"
+                                       onchange="updateItem(${realIndex}, 'reserve', this.value)"
+                                       placeholder="Reserve">
+                            </td>
+                            <td>
+                                <input class="cell-input" type="text"
+                                       value="${escapeHtml(item.toBuy || '')}"
+                                       onchange="updateItem(${realIndex}, 'toBuy', this.value)"
+                                       placeholder="To Buy">
+                            </td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteItem(${realIndex})">Del</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                return categoryRow + itemRows;
             }).join('');
         }
 
@@ -1204,6 +1779,7 @@
         function applyView() {
             const items = getProcessedItems();
             renderGroupedList(items);
+            renderListView(items);
         }
 
         function addRow() {
@@ -1262,6 +1838,7 @@
                     created_at: savedItem.created_at || '',
                     updated_at: savedItem.updated_at || ''
                 });
+                initializeCollapsedCategories();
                 populateCategoryDropdown();
                 renderFilterChips();
                 applyView();
@@ -1275,6 +1852,7 @@
             groceryData[index][field] = value;
             groceryData[index].updated_at = new Date().toISOString();
             await updateItemInSupabase(groceryData[index].id, field, value);
+            initializeCollapsedCategories();
             populateCategoryDropdown();
             renderFilterChips();
             applyView();
@@ -1291,6 +1869,10 @@
                 if (currentCategoryFilter && !groceryData.some(row => row.category === currentCategoryFilter)) {
                     currentCategoryFilter = '';
                     currentQuickFilter = 'all';
+                }
+
+                if (item.category && !groceryData.some(row => row.category === item.category)) {
+                    delete collapsedCategories[item.category];
                 }
 
                 renderFilterChips();
@@ -1329,6 +1911,7 @@
                 groceryData = [];
                 currentQuickFilter = 'all';
                 currentCategoryFilter = '';
+                collapsedCategories = {};
                 renderFilterChips();
                 applyView();
                 showNotification('All data deleted successfully');
@@ -1375,65 +1958,52 @@
             if (!file) return;
 
             const reader = new FileReader();
+
             reader.onload = async function(e) {
                 try {
                     const text = String(e.target.result || '');
-                    const lines = text.split(/\r?\n/).filter(line => line.trim());
+                    const parsed = parseCSVItems(text);
 
-                    if (lines.length < 2) {
-                        showNotification('CSV file is empty');
+                    if (parsed.error) {
+                        showNotification(parsed.error);
                         return;
                     }
 
-                    const newItems = [];
+                    const csvItems = parsed.items;
 
-                    for (let i = 1; i < lines.length; i++) {
-                        const values = parseCSVLine(lines[i]);
-                        if (values.length >= 2 && values[0] && values[1]) {
-                            let category = values[0] || 'Other';
-                            const allCategories = getUniqueCategories();
-                            const matchedCategory = allCategories.find(
-                                cat => cat.toLowerCase() === category.toLowerCase()
-                            );
-                            if (matchedCategory) category = matchedCategory;
-
-                            newItems.push({
-                                category,
-                                items: values[1] || '',
-                                inUse: values[2] || '',
-                                reserve: values[3] || '',
-                                toBuy: values[4] || ''
-                            });
-                        }
-                    }
-
-                    if (newItems.length === 0) {
+                    if (csvItems.length === 0) {
                         showNotification('No valid data found in CSV');
                         return;
                     }
 
-                    showNotification(`Importing ${newItems.length} items...`);
+                    const existingKeys = new Set(groceryData.map(makeItemKey));
+                    const csvUniqueMap = new Map();
 
-                    for (const item of newItems) {
-                        const savedItem = await saveItemToSupabase(item);
-                        if (savedItem) {
-                            groceryData.push({
-                                ...item,
-                                id: savedItem.id,
-                                created_at: savedItem.created_at || '',
-                                updated_at: savedItem.updated_at || ''
-                            });
+                    for (const item of csvItems) {
+                        const key = makeItemKey(item);
+                        if (!csvUniqueMap.has(key)) {
+                            csvUniqueMap.set(key, item);
                         }
                     }
 
-                    populateCategoryDropdown();
-                    renderFilterChips();
-                    applyView();
-                    showNotification(`${newItems.length} items imported successfully`);
+                    const csvUniqueItems = Array.from(csvUniqueMap.values());
+                    const newOnlyItems = csvUniqueItems.filter(item => !existingKeys.has(makeItemKey(item)));
+
+                    if (groceryData.length > 0) {
+                        openCSVImportChoiceModal(csvUniqueItems, newOnlyItems, event.target);
+                        return;
+                    }
+
+                    showNotification(`Importing ${csvUniqueItems.length} item(s)...`);
+                    const importedCount = await insertItemsToSupabase(csvUniqueItems);
+                    showNotification(`${importedCount} item(s) imported successfully`);
                 } catch (error) {
+                    console.error(error);
                     showNotification('CSV import failed');
                 } finally {
-                    event.target.value = '';
+                    if (!pendingCSVImport) {
+                        event.target.value = '';
+                    }
                 }
             };
 
@@ -1443,12 +2013,21 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeModal();
+                closeMenu();
+                closeCSVImportChoiceModal();
             }
         });
 
         document.getElementById('addItemModal').addEventListener('click', function(event) {
             if (event.target.id === 'addItemModal') {
                 closeModal();
+            }
+        });
+
+        document.getElementById('csvImportChoiceModal').addEventListener('click', function(event) {
+            if (event.target.id === 'csvImportChoiceModal') {
+                closeCSVImportChoiceModal();
+                showNotification('CSV import cancelled');
             }
         });
 
