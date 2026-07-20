@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Grocerify V1.5.1</title>
+    <title>Grocerify V2.0</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
     <style>
         :root {
@@ -982,7 +982,7 @@
                 throw new Error('Supabase library not loaded');
             }
         } catch (error) {
-            console.error('Failed to initialize Supabase:', error);
+            console.warn('Failed to initialize Supabase:', error.message);
             alert('Error loading app. Please check your internet connection and refresh the page.');
         }
 
@@ -1194,7 +1194,7 @@
                 showNotification('CSV import cancelled');
             } catch (error) {
                 pendingCSVImport = null;
-                console.error(error);
+                console.warn(error.message);
                 showNotification('CSV import failed');
             }
         }
@@ -1239,7 +1239,8 @@
                     showAuth();
                 }
             } catch (error) {
-                console.error('Auth check failed:', error);
+                console.warn('Auth check failed, user needs to sign in again:', error.message);
+                try { await supabase.auth.signOut(); } catch (e) {}
                 showAuth();
             }
         }
@@ -1291,7 +1292,7 @@
                     await loadDataFromSupabase();
                 }
             } catch (error) {
-                console.error('Auth error:', error);
+                console.warn('Auth error:', error.message);
                 showNotification('Error: ' + error.message);
             }
         }
@@ -1351,6 +1352,7 @@
         }
 
         function handleViewToggle(isListView) {
+            applyView();
             setViewMode(isListView ? 'list' : 'capsule');
         }
 
@@ -1847,15 +1849,27 @@
             }
         }
 
-        async function updateItem(index, field, value) {
+        function updateItem(index, field, value) {
             if (!groceryData[index]) return;
-            groceryData[index][field] = value;
-            groceryData[index].updated_at = new Date().toISOString();
-            await updateItemInSupabase(groceryData[index].id, field, value);
-            initializeCollapsedCategories();
-            populateCategoryDropdown();
-            renderFilterChips();
-            applyView();
+            const item = groceryData[index];
+            const oldCategory = item.category;
+
+            item[field] = value;
+            item.updated_at = new Date().toISOString();
+            
+            updateItemInSupabase(item.id, field, value).catch(e => console.warn(e));
+            
+            if (field === 'category') {
+                if (oldCategory && !groceryData.some(row => row.category === oldCategory)) {
+                    delete collapsedCategories[oldCategory];
+                }
+                if (typeof collapsedCategories[value] === 'undefined') {
+                    collapsedCategories[value] = false;
+                }
+                populateCategoryDropdown();
+                renderFilterChips();
+                applyView();
+            }
         }
 
         async function deleteItem(index) {
@@ -1998,7 +2012,7 @@
                     const importedCount = await insertItemsToSupabase(csvUniqueItems);
                     showNotification(`${importedCount} item(s) imported successfully`);
                 } catch (error) {
-                    console.error(error);
+                    console.warn(error.message);
                     showNotification('CSV import failed');
                 } finally {
                     if (!pendingCSVImport) {
